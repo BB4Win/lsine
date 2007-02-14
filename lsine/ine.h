@@ -34,10 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bang.h"
 
 typedef std::map<LPCSTR, Bang*> BangMap;
-//#define CHECKKEYNAME(x, y)		LPSTR y = MakeBBSettingName(x);
-//#define FREEKEYNAME(x, y)		FreeBBSettingName(x, y);
-#define CHECKKEYNAME(x, y)		char* y = (LPSTR)x;
-#define FREEKEYNAME(x, y)
 
 class IneBangHandler
 {
@@ -82,29 +78,6 @@ class IneSettingsHandler
 private:
 	char _RcPath[MAX_PATH];
 
-	LPSTR MakeBBSettingName(LPCSTR keyName)
-	{
-		int len = lstrlen(keyName);
-		char *key;
-		if (keyName[len] != ':')
-		{
-			 key = new char[len + 2];
-			sprintf(key, "%s:", keyName);
-		}
-		else
-		{
-			key = (LPSTR)keyName;
-		}
-
-		return key;
-	}
-
-	void FreeBBSettingName(LPCSTR keyName, LPSTR key)
-	{
-		if (keyName != key)
-			delete[] key;
-	}
-
 public:
 	IneSettingsHandler()
 	{
@@ -142,14 +115,12 @@ public:
 			if (!ReadNextCommand(pFile, line, MAX_LINE_LENGTH))
 				break;
 
-			CHECKKEYNAME(pszConfig, config);
-			if (!_strnicmp(config, line, lstrlen(config)))
+			if (!_strnicmp(pszConfig, line, lstrlen(pszConfig)))
 			{
 				findConfig = TRUE;
 				strncpy(pszValue, line, cchValue);
 				break;
 			}
-			FREEKEYNAME(pszConfig, config);
 		} while(!findConfig);
 
 		return findConfig;
@@ -162,17 +133,12 @@ public:
 
 	int GetRCInt(LPCSTR lpKeyName, int nDefault)
 	{
-		CHECKKEYNAME(lpKeyName, key);
-		int retValue = ReadInt(_RcPath, key, nDefault);
-		FREEKEYNAME(lpKeyName, key);
-		return retValue;
+		return ReadInt(_RcPath, lpKeyName, nDefault);
 	}
 
 	BOOL GetRCString(LPCSTR lpKeyName, LPSTR value, LPCSTR defStr, int maxLen)
 	{
-		CHECKKEYNAME(lpKeyName, key);
-		strncpy(value, ReadString(_RcPath, key, (LPSTR)defStr), maxLen);
-		FREEKEYNAME(lpKeyName, key);
+		strncpy(value, ReadString(_RcPath, lpKeyName, (LPSTR)defStr), maxLen);
 		return TRUE;
 	}
 
@@ -188,11 +154,7 @@ public:
 
 	BOOL GetRCBoolDef(LPCSTR lpKeyName, BOOL bDefault)
 	{
-		CHECKKEYNAME(lpKeyName, key);
-		BOOL retValue = ReadBool(_RcPath, key, bDefault == TRUE ? true : false);
-		FREEKEYNAME(lpKeyName, key);
-
-		return retValue;
+		return ReadBool(_RcPath, lpKeyName, bDefault == TRUE ? true : false);
 	}
 
 	COLORREF GetRCColor(LPCSTR lpKeyName, COLORREF colDef)
@@ -200,18 +162,12 @@ public:
 		char color[8];
 		sprintf(color, "#%02X%02X%02X", GetRValue(colDef), GetGValue(colDef), GetBValue(colDef));
 
-		CHECKKEYNAME(lpKeyName, key);
-		COLORREF retValue =  ReadColor(_RcPath, key, color);
-		FREEKEYNAME(lpKeyName, key);
-
-		return retValue;
+		return ReadColor(_RcPath, lpKeyName, color);
 	}
 
 	BOOL LSGetVariable(LPCSTR pszKeyName, LPSTR pszValue)
 	{
-		CHECKKEYNAME(pszKeyName, key);
 		strcpy(pszValue, ReadString(_RcPath, pszKeyName, ""));
-		FREEKEYNAME(pszKeyName, key);
 
 		if (pszValue == 0)
 			return FALSE;
@@ -220,9 +176,7 @@ public:
 
 	BOOL LSGetVariableEx(LPCSTR pszKeyName, LPSTR pszValue, DWORD dwLength)
 	{
-		CHECKKEYNAME(pszKeyName, key);
-		strncpy(pszValue, ReadString(_RcPath, key, ""), dwLength);
-		FREEKEYNAME(pszKeyName, key);
+		strncpy(pszValue, ReadString(_RcPath, pszKeyName, ""), dwLength);
 
 		if (pszValue == 0)
 			return FALSE;
@@ -231,9 +185,7 @@ public:
 
 	void LSSetVariable(LPCSTR pszKeyName, LPCSTR pszValue)
 	{
-		CHECKKEYNAME(pszKeyName, key);
 		WriteString("litestep.rc", pszKeyName, (LPSTR)pszValue);
-		FREEKEYNAME(pszKeyName, key);
 	}
 };
 

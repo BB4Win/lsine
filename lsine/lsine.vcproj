@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="C:\shells\xoblite_bb3_rc1\plugins\sdk\blackbox.lib"
+				AdditionalDependencies="blackbox.lib"
 				OutputFile="$(OutDir)\LSApi.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -192,6 +192,10 @@
 			>
 			<File
 				RelativePath=".\bang.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ImageHandler.h"
 				>
 			</File>
 			<File

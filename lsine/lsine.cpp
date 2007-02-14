@@ -44,13 +44,13 @@ extern "C"
     {
         switch (x)
         {
-            case PLUGIN_NAME:			return "LS4BB";
+            case PLUGIN_NAME:			return "LSine";
             case PLUGIN_VERSION:		return "0.0.1";
             case PLUGIN_AUTHOR:			return "Brian Hartvigsen";
             case PLUGIN_RELEASEDATE:	return "2006 Feb 10";
 			case PLUGIN_LINK:			return "http://tresni.crackmonkey.us";
             case PLUGIN_EMAIL:			return "tresni@crackmonkey.us";
-            default:					return "LS4BB 0.0.1";
+            default:					return "LSine 0.0.1";
         }
     };
 };
@@ -74,7 +74,6 @@ void endPlugin(HINSTANCE h)
 	quitMod(hMod);
 }
 
-// TODO: Add these calls to InteropNotEmualte
 LSAPI FILE* LCOpen (LPCSTR szPath)
 {
 	return InteropNotEmulate.GetSettingsHandler()->LCOpen(szPath);
@@ -85,7 +84,6 @@ LSAPI BOOL LCClose (FILE * f)
 	return InteropNotEmulate.GetSettingsHandler()->LCClose(f);
 }
 
-// TODO: Clean up RC reading, look for colons
 LSAPI BOOL LCReadNextCommand(FILE * pFile, LPSTR pszValue, size_t cchValue)
 {
 	return InteropNotEmulate.GetSettingsHandler()->LCReadNextCommand(pFile, pszValue, (DWORD)cchValue);
@@ -136,7 +134,10 @@ LSAPI COLORREF GetRCColor(LPCSTR lpKeyName, COLORREF colDef)
 	return InteropNotEmulate.GetSettingsHandler()->GetRCColor(lpKeyName, colDef);
 }
 
-// TODO: Implement proper variable support.
+/* Basicly we've turned variables into nothing more than just another setting.
+ * I need to read up on LS variables and see if they are really anything differant
+ * than just that.
+ */
 LSAPI BOOL LSGetVariable(LPCSTR pszKeyName, LPSTR pszValue)
 {
 	return InteropNotEmulate.GetSettingsHandler()->LSGetVariable(pszKeyName, pszValue);
@@ -225,7 +226,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 LSAPI HBITMAP LoadLSImage(LPCSTR szFile, LPCSTR szImage)
 {
+	const char* appearance = "%s:";
+	const char* color = "%s.color:";
+	const char* colorTo = "%s.colorTo:";
+	const char* borderColor = "borderColor:";
+	const char* borderWidth = "borderWidth:";
+
 	char dimensions[MAX_LINE_LENGTH];
+	StyleItem si;
+	int width;
+	int height;
+#ifdef BAD_GRADIENT
+	
 	char colorTo[MAX_LINE_LENGTH];
 	char colorFrom[MAX_LINE_LENGTH];
 	char colorBorder[MAX_LINE_LENGTH];
@@ -248,11 +260,45 @@ LSAPI HBITMAP LoadLSImage(LPCSTR szFile, LPCSTR szImage)
 	si.borderWidth = atoi(borderSize);
 
 	ParseItem(gradient, &si);
+#else
+	char styleItem[MAX_LINE_LENGTH];
+	char styleString[MAX_LINE_LENGTH];
+	char style[MAX_LINE_LENGTH];
+	char sPath[MAX_PATH];
+
+	char *tokens[1];
+	tokens[0] = dimensions;
+
+	BBTokenize(szFile, tokens, 1, styleItem);
+	char *w = strtok(dimensions, "x");
+	char *h = dimensions;
+
+	width = atoi(w);
+	height = atoi(h);
+
+	strncpy(sPath, stylePath(), MAX_PATH - 1);
+
+	_snprintf(styleString, MAX_LINE_LENGTH, appearance, styleItem);
+	strncpy(style, ReadString(sPath, styleString, ""), MAX_LINE_LENGTH - 1);
+	ParseItem(style, &si);
+
+	_snprintf(styleString, MAX_LINE_LENGTH, color, styleItem);
+	si.Color = ReadColor(sPath, styleString, "#FFFFFF");
+
+	_snprintf(styleString, MAX_LINE_LENGTH, colorTo, styleItem);
+	si.ColorTo = ReadColor(sPath, styleString, "#000000");
+
+	_snprintf(styleString, MAX_LINE_LENGTH, borderColor, styleItem);
+	si.borderColor = ReadColor(sPath, styleString, "#000000");
+
+	_snprintf(styleString, MAX_LINE_LENGTH, borderWidth, styleItem);
+	si.borderWidth = ReadInt(sPath, styleString, 1);
+#endif
 	HDC hDC = CreateCompatibleDC(NULL);
 	BITMAPINFO alpha;
 	ZeroMemory( &alpha.bmiHeader, sizeof(BITMAPINFOHEADER) );
-	alpha.bmiHeader.biWidth=atoi(width);      // Set size you need
-	alpha.bmiHeader.biHeight=atoi(dimensions);    // Set size you need
+	alpha.bmiHeader.biWidth=width;      // Set size you need
+	alpha.bmiHeader.biHeight=height;    // Set size you need
 	alpha.bmiHeader.biPlanes=1;
 	alpha.bmiHeader.biBitCount=32;      // Can be 8, 16, 32 bpp or other number
 	alpha.bmiHeader.biSizeImage=0;
@@ -268,7 +314,7 @@ LSAPI HBITMAP LoadLSImage(LPCSTR szFile, LPCSTR szImage)
 												NULL,
 												0 );
 	HBITMAP oldBMP = (HBITMAP) SelectObject(hDC, bufferBitmap);
-	RECT r = {0,0,atoi(width), atoi(dimensions)};
+	RECT r = {0,0,width, height};
 	MakeStyleGradient(hDC, &r, &si, false);
 	bufferBitmap = (HBITMAP) SelectObject(hDC, oldBMP);
 	ReleaseDC(NULL, hDC);
@@ -278,25 +324,6 @@ LSAPI HBITMAP LoadLSImage(LPCSTR szFile, LPCSTR szImage)
 
 LSAPI HICON LoadLSIcon (LPCSTR pszIconPath, LPCSTR pszFile)
 {
-/*
-This function's code is a part of the LiteStep Shell Source code.
-
-Copyright (C) 1997-2005 The LiteStep Development Team
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/ 
 	HICON hIcon = ExtractIcon(NULL, pszIconPath, 0);
 	if (hIcon == NULL)
 		hIcon = ExtractIcon(NULL, pszFile, 0);

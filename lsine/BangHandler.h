@@ -1,5 +1,5 @@
 /*
-ine.h
+BangHandler.h
 This work is part of the Litestep Interop Not Emulate Project
 
 Copyright (c) 2007, Brian Hartvigsen
@@ -28,37 +28,51 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef __INE_H__
-#define __INE_H__
+#ifndef __BANG_HANDLER_H__
+#define __BANG_HANDLER_H__
 #pragma once
 
 #include "bbapi.h"
-#include "BangHandler.h"
-#include "SettingsHandler.h"
-#include "ImageHandler.h"
+#include <map>
+#include "bang.h"
 
-class Ine
+typedef std::map<LPCSTR, Bang*> BangMap;
+
+class IneBangHandler
 {
-	IneBangHandler* Bang;
-	IneSettingsHandler *Settings;
-
+	BangMap bangs;
 public:
-	Ine()
+	BOOL AddBang(LPCSTR command, Bang* bang)
 	{
-		Bang = new IneBangHandler();
-		Settings = new IneSettingsHandler();
+		BangMap::iterator it = bangs.find(command);
+		if (it != bangs.end())
+			bangs.erase(it);
+
+		bangs.insert(BangMap::value_type(command, bang));
+		return TRUE;
 	}
 
-	IneBangHandler* GetBangHandler()
+	BOOL RemoveBang(LPCSTR command)
 	{
-		return Bang;
+		BangMap::iterator it = bangs.find(command);
+		if (it != bangs.end())
+		{
+			bangs.erase(it);
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
-	IneSettingsHandler* GetSettingsHandler()
+	BOOL ParseBang(HWND caller, LPCSTR command, LPCSTR args)
 	{
-		return Settings;
+		BangMap::iterator it = bangs.find(command);
+		if (it != bangs.end())
+		{
+			it->second->Execute(caller, args);
+			return TRUE;
+		}
+		return FALSE;
 	}
 };
-
-static Ine InteropNotEmulate;
 #endif

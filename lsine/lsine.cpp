@@ -134,10 +134,6 @@ LSAPI COLORREF GetRCColor(LPCSTR lpKeyName, COLORREF colDef)
 	return InteropNotEmulate.GetSettingsHandler()->GetRCColor(lpKeyName, colDef);
 }
 
-/* Basicly we've turned variables into nothing more than just another setting.
- * I need to read up on LS variables and see if they are really anything differant
- * than just that.
- */
 LSAPI BOOL LSGetVariable(LPCSTR pszKeyName, LPSTR pszValue)
 {
 	return InteropNotEmulate.GetSettingsHandler()->LSGetVariable(pszKeyName, pszValue);
@@ -233,38 +229,14 @@ LSAPI HBITMAP LoadLSImage(LPCSTR szFile, LPCSTR szImage)
 	const char* borderWidth = "borderWidth:";
 
 	char dimensions[MAX_LINE_LENGTH];
-	StyleItem si;
-	int width;
-	int height;
-#ifdef BAD_GRADIENT
-	
-	char colorTo[MAX_LINE_LENGTH];
-	char colorFrom[MAX_LINE_LENGTH];
-	char colorBorder[MAX_LINE_LENGTH];
-	char borderSize[MAX_LINE_LENGTH];
-	char gradient[MAX_LINE_LENGTH];
-	char *tokens[5];
-	tokens[0] = dimensions;
-	tokens[1] = colorFrom;
-	tokens[2] = colorTo;
-	tokens[3] = colorBorder;
-	tokens[4] = borderSize;
-	BBTokenize(szFile, tokens, 5, gradient);
-	char* width = strtok(dimensions, "x");
-
-	StyleItem si;
-
-	si.Color = ReadColor(extensionsrcPath(), "i.do.not.exist!:",colorFrom);
-	si.ColorTo = ReadColor(extensionsrcPath(), "i.do.not.exist!:",colorTo);
-	si.borderColor = ReadColor(extensionsrcPath(), "i.do.not.exist!:",colorBorder);
-	si.borderWidth = atoi(borderSize);
-
-	ParseItem(gradient, &si);
-#else
 	char styleItem[MAX_LINE_LENGTH];
 	char styleString[MAX_LINE_LENGTH];
 	char style[MAX_LINE_LENGTH];
 	char sPath[MAX_PATH];
+
+	StyleItem si;
+	int width;
+	int height;
 
 	char *tokens[1];
 	tokens[0] = dimensions;

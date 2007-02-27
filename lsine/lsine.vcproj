@@ -195,25 +195,41 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ImageHandler.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ine.h"
 				>
 			</File>
-			<File
-				RelativePath=".\lsapi.h"
+			<Filter
+				Name="Handlers"
 				>
-			</File>
-			<File
-				RelativePath=".\lsapidefines.h"
+				<File
+					RelativePath=".\BangHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ImageHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SettingsHandler.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="LiteStep"
 				>
-			</File>
-			<File
-				RelativePath=".\lsmultimon.h"
-				>
-			</File>
+				<File
+					RelativePath=".\lsapi.h"
+					>
+				</File>
+				<File
+					RelativePath=".\lsapidefines.h"
+					>
+				</File>
+				<File
+					RelativePath=".\lsmultimon.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

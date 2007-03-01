@@ -178,7 +178,7 @@ LSAPI HRGN BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTo
 LSAPI HBITMAP BitmapFromIcon (HICON hIcon)
 {
 /*
-This is a part of the LiteStep Shell Source code.
+This function's code is a part of the LiteStep Shell Source code.
 
 Copyright (C) 1997-2005 The LiteStep Development Team
 
@@ -217,7 +217,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	}
 
 	return NULL;
-/* END LITESTEP CODE */
 }
 
 LSAPI HBITMAP LoadLSImage(LPCSTR szFile, LPCSTR szImage)

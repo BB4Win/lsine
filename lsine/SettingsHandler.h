@@ -151,5 +151,55 @@ public:
 	{
 		WriteString("litestep.rc", pszKeyName, (LPSTR)pszValue);
 	}
+
+	int GetRCCoordinate(LPCSTR pszKeyName, int nDefault, int nMaxVal)
+	{
+		char strval[MAX_LINE_LENGTH];
+		if (!ReadString(_RcPath, strval, NULL))
+			return nDefault;
+
+		return ParseCoordinate(strval, nDefault, nMaxVal);
+	}
+
+	int ParseCoordinate(LPCSTR szString, int nDefault, int nMaxVal)
+	{
+		bool center = false;
+		bool percentail = false;
+		bool negative = false;
+		int val = 0;
+
+		if (szString[0] == '-')
+		{
+			negative = true;
+			szString++;
+		}
+		else if (szString[0] == '+')
+			szString++;
+
+		if (IsInString(szString, "%"))
+			percentail = true;
+
+		if (IsInString(szString, "c"))
+			center = true;
+
+		for (;*szString >= '0' && *szString <= '9'; szString++)
+			val = val * 10 + (*szString - '0');
+
+		if (percentail)
+			val = nMaxVal * val / 100;
+
+		if (center)
+		{
+			if (negative)
+				val = nMaxVal / 2 - val;
+			else
+				val = nMaxVal / 2 + val;
+		}
+		else if (negative)
+			val = nMaxVal - val;
+
+		return val;
+	}
+
 };
 #endif

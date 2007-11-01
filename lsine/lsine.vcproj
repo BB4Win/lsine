@@ -206,7 +206,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CommandHandler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\ImageHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ModuleHandler.h"
 					>
 				</File>
 				<File

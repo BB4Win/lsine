@@ -61,18 +61,29 @@ ModuleQuitFunc quitMod;
 
 int beginPlugin(HINSTANCE h)
 {
-	hMod = LoadLibrary("label.dll");
-	initMod = (ModuleInitExFunc)GetProcAddress(hMod, "initModuleEx");
-	quitMod = (ModuleQuitFunc)GetProcAddress(hMod, "quitModule");
-	if (initMod && quitMod)
-		initMod(GetBBWnd(), hMod, "label.dll");
+	LoadModules();
 	return TRUE;
 }
 
 void endPlugin(HINSTANCE h)
 {
+	UnloadModules();
+}
+
+void loadModules()
+{
+	hMod = LoadLibrary("label.dll");
+	initMod = (ModuleInitExFunc)GetProcAddress(hMod, "initModuleEx");
+	quitMod = (ModuleQuitFunc)GetProcAddress(hMod, "quitModule");
+	if (initMod && quitMod)
+		initMod(GetBBWnd(), hMod, "label.dll");
+}
+
+void UnloadModules()
+{
 	quitMod(hMod);
 }
+//-- BEGIN Settings Handler Functions ---------------------------------
 
 LSAPI FILE* LCOpen (LPCSTR szPath)
 {
@@ -149,6 +160,18 @@ LSAPI void LSSetVariable(LPCSTR pszKeyName, LPCSTR pszValue)
 	return InteropNotEmulate.GetSettingsHandler()->LSSetVariable(pszKeyName, pszValue);
 }
 
+LSAPI int GetRCCoordinate(LPCSTR pszKeyName, int nDefault, int nMaxVal)
+{
+	return InteropNotEmulate.GetSettingsHandler()->GetRCCoordinate(pszKeyName, nDefault, nMaxVal);
+}
+
+LSAPI int ParseCoordinate(LPCSTR szString, int nDefault, int nMaxVal)
+{
+	return InteropNotEmulate.GetSettingsHandler()->ParseCoordinate(szString, nDefault, nMaxVal);
+}
+
+//-- BEGIN Bang Handler Functions -------------------------------------
+
 LSAPI BOOL AddBangCommand(LPCSTR pszCommand, BangCommand pfnBangCommand)
 {
 	return InteropNotEmulate.GetBangHandler()->AddBang(pszCommand, new Bang(pfnBangCommand, pszCommand));
@@ -169,9 +192,12 @@ LSAPI BOOL ParseBangCommand (HWND hCaller, LPCSTR pszCommand, LPCSTR pszArgs)
 	return InteropNotEmulate.GetBangHandler()->ParseBang(hCaller, pszCommand, pszArgs);
 }
 
+//-- BEGIN Image Handler Functions ------------------------------------
+
 // TODO: All this!
 LSAPI HRGN BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTolerance, int xoffset, int yoffset)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }
 
@@ -264,7 +290,7 @@ LSAPI HBITMAP LoadLSImage(LPCSTR szFile, LPCSTR szImage)
 
 	_snprintf(styleString, MAX_LINE_LENGTH, borderWidth, styleItem);
 	si.borderWidth = ReadInt(sPath, styleString, 1);
-#endif
+
 	HDC hDC = CreateCompatibleDC(NULL);
 	BITMAPINFO alpha;
 	ZeroMemory( &alpha.bmiHeader, sizeof(BITMAPINFOHEADER) );
@@ -335,128 +361,157 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 		*nHeight = hbmBitmap.bmHeight;
 	}
 }
-LSAPI void TransparentBltLS (HDC dc, int nXDest, int nYDest, int nWidth, int nHeight, HDC tempDC, int nXSrc, int nYSrc, COLORREF colorTransparent) {}
+
+LSAPI void TransparentBltLS (HDC dc, int nXDest, int nYDest, int nWidth, int nHeight, HDC tempDC, int nXSrc, int nYSrc, COLORREF colorTransparent)
+{
+	Log("LSine", __FUNCTION__" Not Implemented");
+}
+
+LSAPI void Frame3D(HDC dc, RECT rect, COLORREF TopColor, COLORREF BottomColor, int Width)
+{
+	Log("LSine", __FUNCTION__" Not Implemented");
+}
+
+//-- BEGIN Command Handler Functions ----------------------------------
 
 LSAPI int CommandTokenize (LPCSTR szString, LPSTR * lpszBuffers, DWORD dwNumBuffers, LPSTR szExtraParameters)
 {
-	return 0;
+	return InteropNotEmulate.GetCommandHandler()->CommandTokenize(szString, lpszBuffers, dwNumBuffers, szExtraParameters);
 }
 
-LSAPI void CommandParse(LPCSTR pszCommand, LPSTR pszOutCommand, LPSTR pszOutArgs, size_t cchOutCommand, size_t cchOutArgs) {}
+LSAPI void CommandParse(LPCSTR pszCommand, LPSTR pszOutCommand, LPSTR pszOutArgs, size_t cchOutCommand, size_t cchOutArgs)
+{
+	return InteropNotEmulate.GetCommandHandler()->CommandParse(pszCommand, pszOutCommand, pszOutArgs, cchOutCommand, cchOutArgs);
+}
 
 LSAPI HINSTANCE LSExecute(HWND Owner, LPCSTR szCommand, int nShowCmd)
 {
-	return BBExecute(Owner, "", szCommand, "", "", nShowCmd, true);
+	return LSExecuteEx(Owner, "", szCommand, "", "", nShowCmd);
 }
 
 LSAPI HINSTANCE LSExecuteEx(HWND Owner, LPCSTR szOperation, LPCSTR szCommand, LPCSTR szArgs, LPCSTR szDirectory, int nShowCmd)
 {
-	return BBExecute(Owner, szOperation, szCommand, szArgs, szDirectory, nShowCmd, true);
+	return InteropNotEmulate.GetCommandHandler()->LSExecuteEx(Owner, szOperation, szCommand, szArgs, szDirectory, nShowCmd);
 }
 
 LSAPI HWND GetLitestepWnd(void)
 {
-	return GetBBWnd();
+	return InteropNotEmulate.GetCommandHandler()->GetLitestepWnd();
 }
 
 LSAPI BOOL WINAPI LSGetLitestepPath(LPSTR pszPath, size_t cchPath)
 {
-	GetBlackboxPath(pszPath, (int)cchPath);
-	return TRUE;
+	return InteropNotEmulate.GetCommandHandler()->LSGetLitestepPath(pszPath, cchPath);
 }
 
 LSAPI BOOL WINAPI LSGetImagePath(LPSTR pszPath, size_t cchPath)
 {
-	GetBlackboxPath(pszPath, (int)cchPath);
-	strncat(pszPath, "images//", cchPath - lstrlen(pszPath));
-	return TRUE;
+	return InteropNotEmulate.GetCommandHandler()->LSGetImagePath(pszPath, cchPath);
 }
 
-LSAPI void VarExpansion(LPSTR pszExpandedString, LPCSTR pszTemplate){}
-LSAPI void VarExpansionEx(LPSTR pszExpandedString, LPCSTR pszTemplate, size_t cchExpandedString){}
+LSAPI void VarExpansion(LPSTR pszExpandedString, LPCSTR pszTemplate)
+{
+	InteropNotEmulate.GetCommandHandler()->VarExpansion(pszExpandedString, pszTemplate);
+}
+
+LSAPI void VarExpansionEx(LPSTR pszExpandedString, LPCSTR pszTemplate, size_t cchExpandedString)
+{
+	InteropNotEmulate.GetCommandHandler()->VarExpansionEx(pszExpandedString, pszTemplate, cchExpandedString);
+}
 
 LSAPI BOOL GetToken(LPCSTR szString, LPSTR szToken, LPCSTR * szNextToken, BOOL useBrackets)
 {
-	return FALSE;
+	return InteropNotEmulate.GetCommandHandler()->GetToken(szString, szToken, szNextToken, useBrackets);
 }
 
-LSAPI void Frame3D(HDC dc, RECT rect, COLORREF TopColor, COLORREF BottomColor, int Width){}
-LSAPI void SetDesktopArea(int left, int top, int right, int bottom){}
+LSAPI void SetDesktopArea(int left, int top, int right, int bottom)
+{
+	InteropNotEmulate.GetCommandHandler()->SetDesktopArea(left, top, right, bottom);
+}
 
 LSAPI BOOL match(LPCSTR pattern, LPCSTR text)
 {
-	return FALSE;
+	return InteropNotEmulate.GetCommandHandler()->match(pattern, text);
 }
 
 LSAPI int matche(LPCSTR pattern, LPCSTR text)
 {
-	return 0;
+	return InteropNotEmulate.GetCommandHandler()->matche(pattern, text);
 }
 
 LSAPI BOOL is_valid_pattern(LPCSTR p, LPINT error_type)
 {
-	return FALSE;
+	return InteropNotEmulate.GetCommandHandler()->is_valid_pattern(p, error_type);
 }
 
-LSAPI void GetResStr(HINSTANCE hInstance, UINT uIDText, LPSTR pszText, size_t cchText, LPCSTR pszDefText){}
-LSAPI void GetResStrEx(HINSTANCE hInstance, UINT uIDText, LPSTR pszText, size_t cchText, LPCSTR pszDefText, ...){}
+//TODO: Implement These ;)
+
+LSAPI void GetResStr(HINSTANCE hInstance, UINT uIDText, LPSTR pszText, size_t cchText, LPCSTR pszDefText)
+{
+	Log("LSine", __FUNCTION__" Not Implemented");
+}
+
+LSAPI void GetResStrEx(HINSTANCE hInstance, UINT uIDText, LPSTR pszText, size_t cchText, LPCSTR pszDefText, ...)
+{
+	Log("LSine", __FUNCTION__" Not Implemented");
+}
 
 LSAPI int LSGetSystemMetrics(int)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return 0;
 }
 
 LSAPI HMONITOR LSMonitorFromWindow(HWND, DWORD)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }
 
 LSAPI HMONITOR LSMonitorFromRect(LPCRECT, DWORD)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }
 
 LSAPI HMONITOR LSMonitorFromPoint(POINT, DWORD)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }
 
 LSAPI BOOL LSGetMonitorInfo(HMONITOR, LPMONITORINFO)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }
 
 LSAPI BOOL LSEnumDisplayMonitors(HDC, LPCRECT, MONITORENUMPROC, LPARAM)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }
 
 LSAPI BOOL LSEnumDisplayDevices(PVOID, DWORD, PDISPLAY_DEVICE, DWORD)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }
 
 LSAPI BOOL WINAPI LSLog(int nLevel, LPCSTR pszModule, LPCSTR pszMessage)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return FALSE;
 }
 
 LSAPI BOOL WINAPIV LSLogPrintf(int nLevel, LPCSTR pszModule, LPCSTR pszFormat, ...)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return FALSE;
-}
-
-LSAPI int GetRCCoordinate(LPCSTR pszKeyName, int nDefault, int nMaxVal)
-{
-	return 0;
-}
-
-LSAPI int ParseCoordinate(LPCSTR szString, int nDefault, int nMaxVal)
-{
-	return 0;
 }
 
 LSAPI HRESULT EnumLSData(UINT uInfo, FARPROC pfnCallback, LPARAM lParam)
 {
+	Log("LSine", __FUNCTION__" Not Implemented");
 	return NULL;
 }

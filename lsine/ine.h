@@ -35,18 +35,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bbapi.h"
 #include "BangHandler.h"
 #include "SettingsHandler.h"
+#include "CommandHandler.h"
 #include "ImageHandler.h"
 
 class Ine
 {
 	IneBangHandler* Bang;
 	IneSettingsHandler *Settings;
+	IneCommandHandler *Command;
+	IneImageHandler *Image;
 
 public:
 	Ine()
 	{
 		Bang = new IneBangHandler();
 		Settings = new IneSettingsHandler();
+		Image = new IneImageHandler();
+		Command = new IneCommandHandler();
 	}
 
 	IneBangHandler* GetBangHandler()
@@ -57,6 +62,16 @@ public:
 	IneSettingsHandler* GetSettingsHandler()
 	{
 		return Settings;
+	}
+
+	IneCommandHandler* GetCommandHandler()
+	{
+		return Command;
+	}
+
+	IneImageHandler* GetImageHandler()
+	{
+		return Image;
 	}
 };
 

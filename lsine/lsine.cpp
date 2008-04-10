@@ -2,7 +2,7 @@
 lsine.cpp
 This work is part of the Litestep Interop Not Emulate Project
 
-Copyright (c) 2007, Brian Hartvigsen
+Copyright (c) 2008, Brian Hartvigsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,23 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <bbapi.h>
+#include "lsine.h"
 #include "ine.h"
 #include "lsapi.h"
 #include "bang.h"
-
-typedef int (*ModuleInitExFunc) (HWND, HINSTANCE, LPCSTR);
-typedef int (*ModuleQuitFunc) (HINSTANCE);
 
 extern "C"
 {
 	DLL_EXPORT int beginPlugin(HINSTANCE h);
 	DLL_EXPORT void endPlugin(HINSTANCE h);
-	DLL_EXPORT LPCSTR    pluginInfo(int x)
+	DLL_EXPORT LPCSTR pluginInfo(int x)
     {
         switch (x)
         {
             case PLUGIN_NAME:			return "LSine";
             case PLUGIN_VERSION:		return "0.0.1";
             case PLUGIN_AUTHOR:			return "Brian Hartvigsen";
-            case PLUGIN_RELEASEDATE:	return "2006 Feb 10";
+            case PLUGIN_RELEASEDATE:	return "2008 April 10";
 			case PLUGIN_LINK:			return "http://tresni.crackmonkey.us";
             case PLUGIN_EMAIL:			return "tresni@crackmonkey.us";
             default:					return "LSine 0.0.1";
@@ -55,37 +52,18 @@ extern "C"
     };
 };
 
-HMODULE hMod;
-ModuleInitExFunc initMod;
-ModuleQuitFunc quitMod;
-
-void LoadModules();
-void UnloadModules();
-
 int beginPlugin(HINSTANCE h)
 {
-	LoadModules();
+	_hMod = h;
+	InteropNotEmulate.GetModuleHandler()->LoadModules();
 	return TRUE;
 }
 
 void endPlugin(HINSTANCE h)
 {
-	UnloadModules();
+	InteropNotEmulate.GetModuleHandler()->UnloadModules();
 }
 
-void LoadModules()
-{
-	hMod = LoadLibrary("label.dll");
-	initMod = (ModuleInitExFunc)GetProcAddress(hMod, "initModuleEx");
-	quitMod = (ModuleQuitFunc)GetProcAddress(hMod, "quitModule");
-	if (initMod && quitMod)
-		initMod(GetBBWnd(), hMod, "label.dll");
-}
-
-void UnloadModules()
-{
-	quitMod(hMod);
-}
 //-- BEGIN Settings Handler Functions ---------------------------------
 
 LSAPI FILE* LCOpen (LPCSTR szPath)
@@ -197,7 +175,6 @@ LSAPI BOOL ParseBangCommand (HWND hCaller, LPCSTR pszCommand, LPCSTR pszArgs)
 
 //-- BEGIN Image Handler Functions ------------------------------------
 
-// TODO: All this!
 LSAPI HRGN BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTolerance, int xoffset, int yoffset)
 {
 	return InteropNotEmulate.GetImageHandler()->BitmapToRegion(hBmp, cTransparentColor, cTolerance, xoffset, yoffset);

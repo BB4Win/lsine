@@ -64,6 +64,7 @@
 				AdditionalDependencies="blackbox.lib"
 				OutputFile="$(OutDir)\LSApi.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\shells\xoblite_bb3_rc1\plugins\sdk"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -196,6 +197,10 @@
 			</File>
 			<File
 				RelativePath=".\ine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\lsine.h"
 				>
 			</File>
 			<Filter

@@ -1,5 +1,5 @@
 /*
-ine.h
+ModuleHandler.h
 This work is part of the Litestep Interop Not Emulate Project
 
 Copyright (c) 2007, Brian Hartvigsen
@@ -28,67 +28,14 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef __INE_H__
-#define __INE_H__
+#ifndef __DISPLAY_HANDLER_H__
+#define __DISPLAY_HANDLER_H__
 #pragma once
 
 #include "bbapi.h"
-#include "BangHandler.h"
-#include "SettingsHandler.h"
-#include "CommandHandler.h"
-#include "ImageHandler.h"
-#include "DisplayHandler.h"
-#include "ModuleHandler.h"
 
-class Ine
-{
-	IneBangHandler* Bang;
-	IneSettingsHandler *Settings;
-	IneCommandHandler *Command;
-	IneImageHandler *Image;
-	IneDisplayHandler *Display;
-	IneModuleHandler *Module;
+class IneDisplayHandler {
 
-public:
-	Ine()
-	{
-		Bang = new IneBangHandler();
-		Settings = new IneSettingsHandler();
-		Image = new IneImageHandler();
-		Command = new IneCommandHandler();
-		Display = new IneDisplayHandler();
-	}
-
-	IneBangHandler* GetBangHandler()
-	{
-		return Bang;
-	}
-
-	IneSettingsHandler* GetSettingsHandler()
-	{
-		return Settings;
-	}
-
-	IneCommandHandler* GetCommandHandler()
-	{
-		return Command;
-	}
-
-	IneImageHandler* GetImageHandler()
-	{
-		return Image;
-	}
-
-	IneDisplayHandler* GetDistplayHandler()
-	{
-		return Display; 
-	}
-
-	IneModuleHandler* GetModuleHandler()
-	{
-		return Module;
-	}
 };
 
-static Ine InteropNotEmulate;
 #endif

@@ -210,6 +210,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\DisplayHandler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\ImageHandler.h"
 					>
 				</File>

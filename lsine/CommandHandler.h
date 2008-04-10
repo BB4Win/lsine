@@ -129,20 +129,6 @@ public:
 		return TRUE;
 	}
 
-	BOOL LSLogPrintf(int nLevel, LPCSTR pszModule, LPCSTR pszFormat, ...)
-	{
-		va_list args;
-		char log_max[MAX_LINE_LENGTH];
-		ZeroMemory(log_max, sizeof(log_max));
-
-		va_start(args, pszFormat);
-		_vsnprintf(log_max, MAX_LINE_LENGTH - 1, pszFormat, args);
-		va_end(args);
-
-		Log(pszModule, log_max);
-		return TRUE;
-	}
-
 	HRESULT EnumLSData(UINT uInfo, FARPROC pfnCallback, LPARAM lParam)
 	{
 		//TODO: Implement EnumLSData

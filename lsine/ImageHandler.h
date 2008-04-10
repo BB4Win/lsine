@@ -214,7 +214,8 @@ public:
 
 	void Frame3D(HDC dc, RECT rect, COLORREF TopColor, COLORREF BottomColor, int Width)
 	{
-		Log("LSine", __FUNCTION__" Not Implemented");
+		TopColor = ReadColor(stylePath(), "borderColor:", "#000000");
+		CreateBorder(dc, &rect, TopColor, Width);
 	}
 };
 #endif

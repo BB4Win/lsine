@@ -35,7 +35,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "lsine.h"
 
 class IneDisplayHandler {
+public:
+	int LSGetSystemMetrics(int)
+	{
+		Log("LSine", __FUNCTION__" Not Implemented");
+		return 0;
+	}
 
+	HMONITOR LSMonitorFromWindow(HWND, DWORD)
+	{
+		Log("LSine", __FUNCTION__" Not Implemented");
+		return NULL;
+	}
+
+	HMONITOR LSMonitorFromRect(LPCRECT, DWORD)
+	{
+		Log("LSine", __FUNCTION__" Not Implemented");
+		return NULL;
+	}
+
+	HMONITOR LSMonitorFromPoint(POINT, DWORD)
+	{
+		Log("LSine", __FUNCTION__" Not Implemented");
+		return NULL;
+	}
+
+	BOOL LSGetMonitorInfo(HMONITOR, LPMONITORINFO)
+	{
+		Log("LSine", __FUNCTION__" Not Implemented");
+		return NULL;
+	}
+
+	BOOL LSEnumDisplayMonitors(HDC, LPCRECT, MONITORENUMPROC, LPARAM)
+	{
+		Log("LSine", __FUNCTION__" Not Implemented");
+		return NULL;
+	}
+
+	BOOL LSEnumDisplayDevices(PVOID, DWORD, PDISPLAY_DEVICE, DWORD)
+	{
+		Log("LSine", __FUNCTION__" Not Implemented");
+		return NULL;
+	}
 };
 
 #endif

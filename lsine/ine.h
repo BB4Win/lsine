@@ -81,7 +81,7 @@ public:
 		return Image;
 	}
 
-	IneDisplayHandler* GetDistplayHandler()
+	IneDisplayHandler* GetDisplayHandler()
 	{
 		return Display; 
 	}

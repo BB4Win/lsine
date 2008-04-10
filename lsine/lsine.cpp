@@ -282,6 +282,62 @@ LSAPI BOOL is_valid_pattern(LPCSTR p, LPINT error_type)
 	return InteropNotEmulate.GetCommandHandler()->is_valid_pattern(p, error_type);
 }
 
+LSAPI BOOL WINAPI LSLog(int nLevel, LPCSTR pszModule, LPCSTR pszMessage)
+{
+	return InteropNotEmulate.GetCommandHandler()->LSLog(nLevel, pszModule, pszMessage);
+}
+
+LSAPI BOOL WINAPIV LSLogPrintf(int nLevel, LPCSTR pszModule, LPCSTR pszFormat, ...)
+{
+	va_list args;
+	char log_max[MAX_LINE_LENGTH];
+	ZeroMemory(log_max, sizeof(log_max));
+
+	va_start(args, pszFormat);
+	_vsnprintf(log_max, MAX_LINE_LENGTH - 1, pszFormat, args);
+	va_end(args);
+	
+	return InteropNotEmulate.GetCommandHandler()->LSLog(nLevel, pszModule, log_max);
+}
+
+//-- BEGIN Display  Handler Functions ----------------------------------
+
+LSAPI int LSGetSystemMetrics(int i)
+{
+	return InteropNotEmulate.GetDisplayHandler()->LSGetSystemMetrics(i);
+}
+
+LSAPI HMONITOR LSMonitorFromWindow(HWND h, DWORD d)
+{
+	return InteropNotEmulate.GetDisplayHandler()->LSMonitorFromWindow(h, d);
+}
+
+LSAPI HMONITOR LSMonitorFromRect(LPCRECT r, DWORD d)
+{
+	return InteropNotEmulate.GetDisplayHandler()->LSMonitorFromRect(r, d);
+}
+
+LSAPI HMONITOR LSMonitorFromPoint(POINT p, DWORD d)
+{
+	return InteropNotEmulate.GetDisplayHandler()->LSMonitorFromPoint(p, d);
+}
+
+LSAPI BOOL LSGetMonitorInfo(HMONITOR h, LPMONITORINFO m)
+{
+	return InteropNotEmulate.GetDisplayHandler()->LSGetMonitorInfo(h, m);
+}
+
+LSAPI BOOL LSEnumDisplayMonitors(HDC h, LPCRECT r, MONITORENUMPROC p, LPARAM l)
+{
+	return InteropNotEmulate.GetDisplayHandler()->LSEnumDisplayMonitors(h, r, p, l);
+}
+
+LSAPI BOOL LSEnumDisplayDevices(PVOID p, DWORD d, PDISPLAY_DEVICE dd, DWORD l)
+{
+	return InteropNotEmulate.GetDisplayHandler()->LSEnumDisplayDevices(p, d, dd, l);
+}
+
+//-- BEGIN Unknown Handler Functions ----------------------------------
 //TODO: Implement These ;)
 
 LSAPI void GetResStr(HINSTANCE hInstance, UINT uIDText, LPSTR pszText, size_t cchText, LPCSTR pszDefText)
@@ -292,60 +348,6 @@ LSAPI void GetResStr(HINSTANCE hInstance, UINT uIDText, LPSTR pszText, size_t cc
 LSAPI void GetResStrEx(HINSTANCE hInstance, UINT uIDText, LPSTR pszText, size_t cchText, LPCSTR pszDefText, ...)
 {
 	Log("LSine", __FUNCTION__" Not Implemented");
-}
-
-LSAPI int LSGetSystemMetrics(int)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return 0;
-}
-
-LSAPI HMONITOR LSMonitorFromWindow(HWND, DWORD)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return NULL;
-}
-
-LSAPI HMONITOR LSMonitorFromRect(LPCRECT, DWORD)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return NULL;
-}
-
-LSAPI HMONITOR LSMonitorFromPoint(POINT, DWORD)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return NULL;
-}
-
-LSAPI BOOL LSGetMonitorInfo(HMONITOR, LPMONITORINFO)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return NULL;
-}
-
-LSAPI BOOL LSEnumDisplayMonitors(HDC, LPCRECT, MONITORENUMPROC, LPARAM)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return NULL;
-}
-
-LSAPI BOOL LSEnumDisplayDevices(PVOID, DWORD, PDISPLAY_DEVICE, DWORD)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return NULL;
-}
-
-LSAPI BOOL WINAPI LSLog(int nLevel, LPCSTR pszModule, LPCSTR pszMessage)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return FALSE;
-}
-
-LSAPI BOOL WINAPIV LSLogPrintf(int nLevel, LPCSTR pszModule, LPCSTR pszFormat, ...)
-{
-	Log("LSine", __FUNCTION__" Not Implemented");
-	return FALSE;
 }
 
 LSAPI HRESULT EnumLSData(UINT uInfo, FARPROC pfnCallback, LPARAM lParam)

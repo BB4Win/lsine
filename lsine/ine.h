@@ -2,7 +2,7 @@
 ine.h
 This work is part of the Litestep Interop Not Emulate Project
 
-Copyright (c) 2007, Brian Hartvigsen
+Copyright (c) 2008, Brian Hartvigsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __INE_H__
 #pragma once
 
-#include "bbapi.h"
+#include "lsine.h"
 #include "BangHandler.h"
 #include "SettingsHandler.h"
 #include "CommandHandler.h"
@@ -42,6 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class Ine
 {
+	HINSTANCE hModule;
 	IneBangHandler* Bang;
 	IneSettingsHandler *Settings;
 	IneCommandHandler *Command;
@@ -57,6 +58,7 @@ public:
 		Image = new IneImageHandler();
 		Command = new IneCommandHandler();
 		Display = new IneDisplayHandler();
+		Module = new IneModuleHandler();
 	}
 
 	IneBangHandler* GetBangHandler()

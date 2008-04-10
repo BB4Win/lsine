@@ -2,7 +2,7 @@
 ModuleHandler.h
 This work is part of the Litestep Interop Not Emulate Project
 
-Copyright (c) 2007, Brian Hartvigsen
+Copyright (c) 2008, Brian Hartvigsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,91 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __MODULE_HANDLER_H__
 #pragma once
 
-#include "bbapi.h"
+#include "lsine.h"
+
+typedef int (*ModuleInitExFunc) (HWND, HINSTANCE, LPCSTR);
+typedef int (*ModuleQuitFunc) (HINSTANCE);
+
+struct ModuleList {
+	HMODULE hMod;
+//	ModuleInitExFunc initMod;
+	ModuleQuitFunc quitMod;
+	ModuleList* next;
+};
 
 class IneModuleHandler {
+private:
+	ModuleList *modTree;
+	ModuleList *modBranch;
+
+	void innerUnload(ModuleList* mod)
+	{
+		if (mod)
+		{
+			if (mod->next)
+				innerUnload(mod->next);
+
+			mod->quitMod(mod->hMod);
+		}
+	}
+public:
+	IneModuleHandler() : modTree(NULL), modBranch(NULL)
+	{
+	}
+
+	void LoadModules()
+	{
+		char _RcPath[MAX_PATH + 1];
+		ZeroMemory(&_RcPath, MAX_PATH + 1);
+
+		DWORD len = ::GetModuleFileName(_hMod, _RcPath, MAX_PATH);
+		for (;_RcPath[len] != '\\'; len--)
+			_RcPath[len] = 0;
+
+		strcpy(_RcPath, ConfigFileExists("litestep.rc", _RcPath));
+
+		FILE* fp = FileOpen(_RcPath);
+		char buffer[MAX_LINE_LENGTH];
+
+		while (ReadNextCommand(fp, buffer, MAX_LINE_LENGTH))
+		{
+			if (buffer[0] == '!' || buffer[0] == '#' || buffer[0] == ';')
+				continue;
+			
+			HMODULE hMod = LoadLibrary(buffer);
+			ModuleInitExFunc initMod = (ModuleInitExFunc)GetProcAddress(hMod, "initModuleEx");
+			ModuleQuitFunc quitMod = (ModuleQuitFunc)GetProcAddress(hMod, "quitModule");
+
+			if (initMod && quitMod)
+			{
+
+				if (initMod(GetBBWnd(), hMod, buffer) == 0)
+				{
+					if (modTree == NULL)
+					{
+						modTree = new ModuleList;
+						modTree->hMod = hMod;
+						//modTree->initMod = initMod;
+						modTree->quitMod = quitMod;
+						modTree->next = NULL;
+						modBranch = modTree;
+					}
+					else
+					{
+						modBranch = modBranch->next = new ModuleList;
+						modBranch->hMod = hMod;
+						modBranch->quitMod = quitMod;
+						modBranch->next = NULL;
+					}
+				}
+			}
+		}
+	}
+
+	void UnloadModules()
+	{
+		innerUnload(modTree);
+	}
 
 };
 

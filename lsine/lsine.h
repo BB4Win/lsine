@@ -1,5 +1,5 @@
 /*
-DisplayHandler.h
+LSine.h
 This work is part of the Litestep Interop Not Emulate Project
 
 Copyright (c) 2008, Brian Hartvigsen
@@ -28,14 +28,10 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef __DISPLAY_HANDLER_H__
-#define __DISPLAY_HANDLER_H__
+#ifndef __LSINE_H__
+#define __LSINE_H__
 #pragma once
+#include "bbapi.h"
 
-#include "lsine.h"
-
-class IneDisplayHandler {
-
-};
-
+HINSTANCE _hMod;
 #endif

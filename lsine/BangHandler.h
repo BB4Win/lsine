@@ -2,7 +2,7 @@
 BangHandler.h
 This work is part of the Litestep Interop Not Emulate Project
 
-Copyright (c) 2007, Brian Hartvigsen
+Copyright (c) 2008, Brian Hartvigsen
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __BANG_HANDLER_H__
 #pragma once
 
-#include "bbapi.h"
+#include "lsine.h"
 #include <map>
 #include "bang.h"
 

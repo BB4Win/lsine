@@ -99,7 +99,7 @@ public:
 
 	BOOL GetRCString(LPCSTR lpKeyName, LPSTR value, LPCSTR defStr, int maxLen)
 	{
-		strncpy(value, ReadString(_RcPath, lpKeyName, (LPSTR)defStr), maxLen);
+		strncpy(value, ReadString(_RcPath, lpKeyName, (LPSTR)(defStr != NULL ? defStr : "")), maxLen);
 		return TRUE;
 	}
 

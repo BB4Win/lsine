@@ -53,7 +53,11 @@ public:
 		if (szCommand[0] == '@')
 		{
 			SendMessage(GetBBWnd(), BB_BROADCAST, NULL, (LPARAM)szCommand);
-			return NULL;
+			return HINSTANCE(33);
+		}
+		else if (szCommand[0] == '!')
+		{
+			return ParseBangCommand(Owner, szCommand, szArgs) ? HINSTANCE(33) : HINSTANCE(32);
 		}
 		else
 			return BBExecute(Owner, szOperation, szCommand, szArgs, szDirectory, nShowCmd, true);

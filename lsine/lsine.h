@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __LSINE_H__
 #pragma once
 #include "bbapi.h"
+#include "lsapi.h"
 
 HINSTANCE _hMod;
 #endif

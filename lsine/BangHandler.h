@@ -33,10 +33,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "lsine.h"
+#include <string>
+#include <algorithm>
 #include <map>
 #include "bang.h"
 
-typedef std::map<LPCSTR, Bang*> BangMap;
+typedef std::map<std::string, Bang*> BangMap;
 
 class IneBangHandler
 {
@@ -44,17 +46,22 @@ class IneBangHandler
 public:
 	BOOL AddBang(LPCSTR command, Bang* bang)
 	{
-		BangMap::iterator it = bangs.find(command);
+		std::string c = command;
+		std::transform(c.begin(), c.end(), c.begin(), tolower);
+		BangMap::iterator it = bangs.find(c);
 		if (it != bangs.end())
 			bangs.erase(it);
+		
 
-		bangs.insert(BangMap::value_type(command, bang));
+		bangs.insert(BangMap::value_type(c, bang));
 		return TRUE;
 	}
 
 	BOOL RemoveBang(LPCSTR command)
 	{
-		BangMap::iterator it = bangs.find(command);
+		std::string c = command;
+		std::transform(c.begin(), c.end(), c.begin(), tolower);
+		BangMap::iterator it = bangs.find(c);
 		if (it != bangs.end())
 		{
 			bangs.erase(it);
@@ -66,7 +73,9 @@ public:
 
 	BOOL ParseBang(HWND caller, LPCSTR command, LPCSTR args)
 	{
-		BangMap::iterator it = bangs.find(command);
+		std::string c = command;
+		std::transform(c.begin(), c.end(), c.begin(), tolower);
+		BangMap::iterator it = bangs.find(c);
 		if (it != bangs.end())
 		{
 			it->second->Execute(caller, args);
